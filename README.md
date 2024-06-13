@@ -1,2 +1,2 @@
-# jogo-da-forca-da-Dc
+# DC comics em c#
 jogo da forca em C
