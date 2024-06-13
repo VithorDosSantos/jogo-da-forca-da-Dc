@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+// Função para verificar se a letra está na palavra
+int letraNaPalavra(char letra, char palavra[], int tamanho) {//criei sem ser void pois void n retora nenhum valor//
+	int i;
+    for ( i = 0; i < tamanho; i++) {
+        if (palavra[i] == letra) {
+            return 1; // Letra encontrada
+        }
+    }
+    return 0; // Letra não encontrada
+}
+
+void exibirStickman(int tentativas) {// imprimir o palito//
+    switch (tentativas) {
+        case 6:
+            printf("  O\n");
+            break;
+        case 5:
+            printf("  O\n");
+            printf("  |\n");
+            break;
+        case 4:
+            printf("  O\n");
+            printf(" /|\n");
+            break;
+        	case 3:
+             printf("  O\n");
+            printf(" /|\\\n");
+            break;
+        case 2:
+            printf("  O\n");          
+            printf(" /|\\\n");
+            printf(" /\n");
+            break;
+        case 1:
+            printf("  O\n");                 
+            printf(" /|\\\n");
+            printf(" / \\\n");
+            break;
+        default:
+        	printf("\n");
+            break;
+    }
+}
+
+int main() {
+	//declarando variaveis//
+	 char personagens[][25] = {"batman", "superman", "arlequina", "joker", "flash", "shazam", "robin"};
+    int numPersonagens = sizeof(personagens) / sizeof(personagens[0]);//sizeof personagens retorna o tamanho total de bytes do array personagem, o outro retorna total de bytes do primeiro elemento(0) do vetor personagens o resultado dessa divisao retorna o tamanho total do vetor//
+    char palavra[20];
+    srand(time(NULL));
+    strcpy(palavra, personagens[rand() % numPersonagens]); // Sorteia um personagem
+	int i;
+    int tamanho = strlen(palavra);
+    char letrasDigitadas[26] = {0}; // Armazena as letras já digitadas
+    int tentativas = 6; // Número máximo de tentativas
+    int acertos = 0; // Pontuação de acertos
+    int erros = 0;
+    printf("Bem-vindo ao Jogo da Forca com personagens da DC Comics!\n");
+
+    char resposta;
+    printf("Deseja adicionar um novo heroi? (S/N): ");
+    scanf(" %c", &resposta);
+
+    if (resposta == 'S' || resposta == 's') {
+        char novoHeroi[20];
+        printf("Digite o nome de um novo heroi da DC Comics: ");
+        scanf("%s", novoHeroi);
+        strcpy(personagens[numPersonagens], novoHeroi);//o conteudo da variavel novo heroi e add em personagens//
+        numPersonagens++;
+        printf("Novo heroi adicionado com sucesso!\n");
+        strcpy(palavra, personagens[rand() % numPersonagens]); //atualiza a variavel da palavra, com o novo personagem escolhido de forma aleatoria// 
+        tamanho = strlen(palavra);///atualiza o tamanho do palavra com o novo heroi//
+    }
+
+    while (1) {
+        printf("\nPalavra: ");
+        for (i = 0; i < tamanho; i++) {
+            if (letraNaPalavra(palavra[i], letrasDigitadas, strlen(letrasDigitadas))) {// verifica se a letra atual ja foi adivinhada pelo jogador,isso e feito pela funçao letraNaPalavra verifica se letra esta contida nas palavras digitadas//
+                printf(" %c", palavra[i]);//se letranapalavra retorna verdadeiro signifca q ja descobriua palavra//
+            } else {
+                printf("? ");// se a letra n foi revelada poem ? e esconde a palavra//
+            }
+        }
+
+        printf("\nLetras ja digitadas: %s\n", letrasDigitadas);//letras tentadas//
+        printf("Tentativas restantes: %d\n", tentativas);//tentativas
+
+        char letra;
+        printf("Digite uma letra: ");
+        scanf(" %c", &letra);
+
+        if (strlen(letrasDigitadas) < 26) {//se o tamanho da letra digitada for menor que 26 sginfica que ainda tem letra para tentar,a letra que o jogador acabou de digitar e adicionada ao final da string letrasdigitadas//
+            letrasDigitadas[strlen(letrasDigitadas)] = letra; // Adiciona a letra às já digitadas
+        } else {
+            printf("Voce ja digitou todas as letras possiveis!\n");
+        }
+
+        if (letraNaPalavra(letra, palavra, tamanho)) {
+            printf("Acertou!\n");
+            acertos += 2; // Ganha 2 pontos por acerto
+        } else {
+            printf("Errou!\n");
+            printf("Pontuacao atual: %d\n", acertos - erros); // Mostra a pontuação após o erro
+            erros++; // Perde 1 ponto por erro
+            tentativas--;
+        }
+
+        int acertouTodas = 1;
+        for (i = 0; i < tamanho; i++) {
+            if (!letraNaPalavra(palavra[i], letrasDigitadas, strlen(letrasDigitadas))) {// o ! no começo inverte a logica e verifica se a letra atual n foi reveleada pelo jogador,que verifica se esta contida no conjunto das letras digitadas//
+                acertouTodas = 0;// n acertou nnenhuma//
+                break;
+            }
+        }
+
+        if (acertouTodas) {//ganhouuu//
+            printf("\nParabens! Voce ganhou! A palavra era: %s\n", palavra);
+            printf("Pontuacao final: %d pontos, %d erros\n", acertos, erros);
+            break;
+        } else if (tentativas == 0) {//perdeu o jogo//
+            printf("\nVoce perdeu! A palavra era: %s\n", palavra);
+            printf("Pontuacao final: %d pontos, %d erros\n", acertos, erros);
+            break;
+        }
+        if(tentativas!=6){
+        	exibirStickman(tentativas); // Exibe o stickman
+		}
+    }
+
+    return 0;
+}
+
